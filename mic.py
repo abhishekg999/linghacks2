@@ -1,24 +1,19 @@
-'''
+# import speech_recognition as sr
 
-from imageai.Prediction import ImagePrediction
+
+# r = sr.Recognizer()
+# aaryan = sr.AudioFile('/Users/adivate2021/Downloads/aaryan.wav')
+# with aaryan as source:
+# 	audio = r.record(source)
+# print(r.recognize_google(audio))
+
+import speech_recognition as sr
 import os
-execution_path = os.getcwd()
-
-
-prediction = ImagePrediction()
-prediction.setModelTypeAsResNet()
-prediction.setModelPath(os.path.join(execution_path, "resnet50_weights_tf_dim_ordering_tf_kernels.h5"))
-prediction.loadModel()
-
-
-predictions, probabilities = prediction.predictImage(os.path.join(execution_path, "image.jpg"), result_count=2)
-for eachPrediction, eachProbability in zip(predictions, probabilities):
-	print(eachPrediction , " : " , eachProbability)
-'''
+import time
 
 from imageai.Detection import ObjectDetection
 from PIL import Image
-import os
+import cv2
 
 
 #1612.8, 1209.6, 2419.2, 1814.4
@@ -76,44 +71,39 @@ def recog(image):
 		say = ("There might be a " + eachObject["name"] + "ahead")
 	os.system("say " + say)
 
-import cv2
-import random
 
-cap = cv2.VideoCapture(0)
-
-i=0
-while(True):
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-    i+=1
-
-
-    cv2.imshow('frame',frame)
-    if cv2.waitKey(33) == ord('a'):
-    	cv2.imwrite('opencv'+str(i)+'.png', frame)
-    	recog("opencv" + str(i)+".png")
-   		
-
-# When everything done, release the capture
-cap.release()
-cv2.destroyAllWindows()
-
-
-
-	
-
-
-
-
-
-#name, percentage_probablility, box_points
-
-
-"""
-	if doOverlap((eachObject['box_points'][0], eachObject['box_points'][1]),(eachObject['box_points'][2], eachObject['box_points'][3]),(centerbox[0], centerbox[1]),(centerbox[2], centerbox[3])):
-		print(eachObject["name"] , " : " , eachObject["percentage_probability"] )
-"""
-
-
-
+	#################
+def RecognitionProgram():
+	r = sr.Recognizer()
+	mic = sr.Microphone()
+	with mic as source:
+		r.adjust_for_ambient_noise(source)
+		audio = r.listen(source, phrase_time_limit = 0.69)
+	response = {
+		"success": True,
+		"error": None,
+		"transcription": None
+	}
+	try:
+		response["transcription"] = r.recognize_google(audio)
+	except sr.RequestError:
+		response["success"] = False
+		response["error"] = "API unavailable"
+	except sr.UnknownValueError:
+		response["error"] = "Unable to recognize speech"
+	print(response)
+	transcription = response["transcription"]
+	if transcription == "vision" or transcription == "vision" or transcription == "vision" or transcription == "open vision":
+		camera = cv2.VideoCapture(0)
+		say = "Opening vision, scanning enviornment"
+		os.system("say " + say)
+		time.sleep(0.1)  # If you don't wait, the image will be dark
+		return_value, image = camera.read()
+		cv2.imwrite('opencv.png', image)
+		del(camera)
+		recog("opencv.png")
+		RecognitionProgram()
+	else:
+		RecognitionProgram()		
+RecognitionProgram()
 
