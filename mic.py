@@ -39,7 +39,9 @@ detector.setModelTypeAsRetinaNet()
 detector.setModelPath( os.path.join(execution_path , "resnet50_coco_best_v2.0.1.h5"))
 detector.loadModel()
 
+
 def recog(image):
+	global detections
 	im = Image.open(image)
 	width, height = im.size
 
@@ -71,6 +73,59 @@ def recog(image):
 		say = ("There might be a " + eachObject["name"] + "ahead")
 	os.system("say " + say)
 
+def secondRecognitionProgram():
+
+	r = sr.Recognizer()
+	mic = sr.Microphone()
+
+	say = "Do you want more info?"
+	os.system("say " + say)
+	with mic as source:
+		r.adjust_for_ambient_noise(source)
+		audio = r.listen(source, phrase_time_limit = 0.69)
+	response = {
+		"success": True,
+		"error": None,
+		"transcription": None
+	}
+
+	try:
+		response["transcription"] = r.recognize_google(audio)
+	except sr.RequestError:
+		response["success"] = False
+		response["error"] = "API unavailable"
+	except sr.UnknownValueError:
+		response["error"] = "Unable to recognize speech"
+	print(response)
+	transcription = response["transcription"]
+	nt = []
+
+	working = False
+	if transcription == "yes" or "yeah":
+		for x in range(len(detections)):
+			if detections[x]["name"] not in nt:
+				nt.append(detections[x]["name"])
+				
+		working = True
+		if len(nt) == 1:
+			say = "I only see a " + nt[0] 
+			os.system("say " + say)
+		elif len(nt) == 2:
+			say = "I see a " + nt[0] + " and a " + nt[1]
+			os.system("say " + say)
+		else: 
+			say = "I see a"
+			for x in range(len(nt)-1):
+				say += " , " + nt[x] 
+			say += " , and a " + nt[len(nt) -1]
+			print (say)
+			os.system("say " + say)
+
+	elif transcription == "no":
+		working = True
+	else:
+		secondRecognitionProgram()
+
 
 	#################
 def RecognitionProgram():
@@ -93,7 +148,7 @@ def RecognitionProgram():
 		response["error"] = "Unable to recognize speech"
 	print(response)
 	transcription = response["transcription"]
-	if transcription == "vision" or transcription == "vision" or transcription == "vision" or transcription == "open vision":
+	if transcription == "site" or transcription == "sight" or transcription == "see" or transcription == "vision":
 		camera = cv2.VideoCapture(0)
 		say = "Opening vision, scanning enviornment"
 		os.system("say " + say)
@@ -102,7 +157,9 @@ def RecognitionProgram():
 		cv2.imwrite('opencv.png', image)
 		del(camera)
 		recog("opencv.png")
-		RecognitionProgram()
+
+		secondRecognitionProgram()
+		RecognitionProgram()	
 	else:
 		RecognitionProgram()		
 RecognitionProgram()

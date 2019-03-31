@@ -150,7 +150,7 @@ def RecognitionProgram():
 	transcription = response["transcription"]
 	if transcription == "site" or transcription == "sight" or transcription == "see" or transcription == "vision":
 		camera = cv2.VideoCapture(0)
-		say = "Opening vision, scanning enviornment"
+		say = "Opening vision, scanning your enviornment."
 		os.system("say " + say)
 		time.sleep(0.1)  # If you don't wait, the image will be dark
 		return_value, image = camera.read()
