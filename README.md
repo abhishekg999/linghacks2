@@ -16,6 +16,10 @@ like a bunch of other libraries
 install portaudio through homebrew(mac) or apt(linux) or somewhere else windows
 - before installing speech_recognition
 
+IF GETTING OSERROR, THIS IS PROB CZ YOU ARE MISSING THE PRETRAINED MODEL, DOWNLOAD RESNET50
+
+https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/resnet50_coco_best_v2.0.1.h5
+
 Also need .h5 file
 using resnet50_coco_best_v2.0.1.h5
 (can also use other models, but some stuff would have to be changed)
